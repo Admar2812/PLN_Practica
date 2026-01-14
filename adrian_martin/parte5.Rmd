@@ -1,0 +1,68 @@
+---
+title: "Parte 5"
+author: "Adrián Martín Marín"
+date: "2026-01-10"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r echo=TRUE, message=FALSE}
+# Cargar el corpus
+corpus_cp <- readRDS("corpus_codigo_penal.rds")
+# Cargar librerías
+library(quanteda)
+library(spacyr)
+library(dplyr)
+spacy_initialize(model = "es_core_news_sm")
+library(udpipe)
+modelo_ud <- udpipe_download_model(language = "spanish")
+ud_model <- udpipe_load_model(modelo_ud$file_model)
+```
+
+Primero extraemos los documentos del corpus y buscamos en ellos las entidades nombradas con spacyr.
+
+```{r echo=TRUE, message=FALSE}
+# Extraer los documentos del corpus
+textos <- as.character(corpus_cp)
+# Buscamos entidades nombradas con spacyr
+ent_spacy <- spacy_extract_entity(textos, type = "named")
+```
+
+Ahora mostramos las 20 entidades más frecuentes que se han encontrado.
+
+```{r echo=TRUE, message=FALSE}
+top20_spacy <- count(ent_spacy, text, sort = TRUE)
+top20_spacy <- slice_head(top20_spacy, n = 20)
+top20_spacy
+```
+
+Ahora procesamos los documentos con udpipe y buscamos las entidades nombradas con esta librería.
+
+```{r echo=TRUE, message=FALSE}
+# Procesamos los documentos
+texto_udpipe <- udpipe_annotate(ud_model, x = textos)
+texto_udpipe_df <- as.data.frame(texto_udpipe)
+# Buscamos entidades nombradas con udpipe
+ent_udpipe <- keywords_rake(x = texto_udpipe_df,term = "lemma", group = "doc_id", 
+                           relevant = texto_udpipe_df$upos == "PROPN")
+```
+
+Mostramos las 20 entidades nombradas más frecuentes encontradas por udpipe.
+
+```{r echo=TRUE, message=FALSE}
+top20_udpipe <- count(ent_udpipe, keyword, sort = TRUE)
+top20_udpipe <- slice_head(top20_udpipe, n = 20)
+top20_udpipe
+```
+
+Por último buscamos qué entidades coinciden en los resultados dados por ambas librerías. Veremos que son pocas, y esto se debe a que la manera de filtrar el texto de cada librería es distinta, ya que por un lado spacyr sí que está entrenado para encontrar entidades nombradas como tal (y por tanto es el modelo más adecuado) mientras que udpipe solo hace la búsqueda según la categoría gramatical de la palabra (en este caso nombres propios, aunque incluso comete algún error en el filtrado e incluye palabras de otras categorías).
+
+```{r echo=TRUE, message=FALSE}
+spacy_vec <- tolower(top20_spacy$text) # Lo convertimos todo a minúsculas para evitar errores
+udpipe_vec <- tolower(top20_udpipe$keyword)
+comunes <- intersect(spacy_vec, udpipe_vec) # Encontramos las entidades comunes
+comunes
+```
