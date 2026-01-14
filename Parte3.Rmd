@@ -1,0 +1,58 @@
+---
+title: "Parte 3"
+output: html_document
+date: "2026-01-14"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(quanteda)
+library(dplyr)
+library(stringr)
+
+# 1. Carga de datos
+articulos <- read.csv("articulos_limpios.csv", stringsAsFactors = FALSE)
+
+# 2. Construcción de nombres de documento ÚNICOS
+articulos <- articulos %>%
+  mutate(
+    docname_base = paste(
+      libro,
+      titulo,
+      capitulo,
+      seccion,
+      paste("Artículo", articulo),
+      sep = "."
+    ),
+    docname_base = str_replace_all(docname_base, "\\bNA\\b\\.?", ""),
+    docname_base = str_replace_all(docname_base, "\\.+", "."),
+    docname_base = str_replace_all(docname_base, "^\\.|\\.$", ""),
+    docname = make.unique(docname_base)
+  )
+
+# 3. Crear el corpus quanteda
+corpus_cp <- corpus(
+  x = articulos$texto_articulo,
+  docnames = articulos$docname
+)
+
+# 4. Añadir docvars
+docvars(corpus_cp, "libro")    <- articulos$libro
+docvars(corpus_cp, "titulo")   <- articulos$titulo
+docvars(corpus_cp, "capitulo") <- articulos$capitulo
+docvars(corpus_cp, "seccion")  <- articulos$seccion
+docvars(corpus_cp, "articulo") <- articulos$articulo
+docvars(corpus_cp, "contexto") <- articulos$contexto
+
+# 5. Comprobación
+summary(corpus_cp)
+
+# 6. Guardar el corpus
+saveRDS(corpus_cp, "corpus_codigo_penal.rds")
+
+message("OK: corpus_codigo_penal.rds generado correctamente")
+
+
