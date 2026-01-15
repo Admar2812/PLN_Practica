@@ -1,23 +1,4 @@
----
-title: "parte1"
-author: "Carlos Herranz Bascuñan"
-date: "2026-01-12"
-output:
-  pdf_document: default
-  html_document: default
----
 
-```{r setup, include=FALSE}
-```
-
-## R Markdown
-
-Parte 1 del trabajo de R
-
-
-
-Esta función se encarga que dado la URL de la pagina del codigo penal leerla y devolver el texto de esta
-```{r}
 #Funcion para cargar la pagina web del codigo penal
 cargar_texto<-function(){
   #URL de la pagina del codigo penal
@@ -27,10 +8,6 @@ cargar_texto<-function(){
   return(codigo_penal_pagina)
 }
 
-```
-
-Con la pagina ya cargada ahora tocara buscar los links en esta pagina para ello usamos esta función que con una pagina web dada devuelve todos los links de articulos de esta pagina web, ya sean bis o normal
-```{r}
 #Funcion para dada una pagina web devolver todos los links de los articulos de esta
 buscar_links_articulos<-function(pagina_web_codigo_penal){
   #Buscamos en la pagina todos los links
@@ -41,11 +18,6 @@ buscar_links_articulos<-function(pagina_web_codigo_penal){
   return(unlist(articulos))
 }
 
-```
-
-
-Una vez en la pagina web del articulo en sí esta funcion se encarga de obtener la estructuracion del articulo, ya sea titulo, libro...
-```{r}
 #Dada una pagina web de un articulo y la uri de esta devuelve la estructura del articulo
 obtener_estructura<-function(URL_articulo,pagina_web_articulo){
   library(stringr)
@@ -58,7 +30,7 @@ obtener_estructura<-function(URL_articulo,pagina_web_articulo){
   libro_articulo<-"NA"
   capitulo_articulo<-"NA"
   seccion_articulo<-"NA"
-
+  
   #Vemos si el titulo es preliminar
   if (nchar(numero_articulo)<2){
     titulo_articulo<-str_extract(pagina_web_articulo,"TÍTULO PRELIMINAR: [[:alnum:][:punct:] ]*")
@@ -73,45 +45,68 @@ obtener_estructura<-function(URL_articulo,pagina_web_articulo){
     
     #Sacamos la seccion si hay
     seccion_articulo<-str_extract(pagina_web_articulo,"Sección [IVX]*")
-    }
-    
+  }
+  
   lista_resultado<-list(libro=libro_articulo,titulo=titulo_articulo,capitulo=capitulo_articulo,seccion=seccion_articulo)
   return(lista_resultado)
 }
-  
-```
 
 
-Esta función es algo mas auxiliar porque debido a la gran cantidad de paginas web que tenemos que leer he decidido crear una nueva pagina funcion que se encarge de leer las web y obtener la estructura de estas
-```{r}
 #Funcion que se encarga de los bucles repetidos
-sacar_contenido<-function(inicio_f,final_f,articulos_f,tabla_articulos_f){
-  for (articulo in (unlist(articulos_f)[inicio_f:final_f])){
-    numero_articulo<-str_extract(articulo,'[0-9]+.*')
-    pagina_web<-paste(readLines(articulo,encoding = "UTF-8"),collapse="\n")
-    lista<-obtener_estructura(articulo,pagina_web)
-    #texto<-paste(lista["libro"] ,lista["titulo"],lista["capitulo"],lista["seccion"],numero_articulo,sep=" ")
-    #print(texto)
+sacar_contenido <- function(inicio_f, final_f, articulos_f, tabla_articulos_f) {
+  library(stringr)
+  
+  # Extraemos los links del rango solicitado
+  links_rango <- unlist(articulos_f)[inicio_f:final_f]
+  
+  #leemos cada uno de los articulos
+  for (articulo in links_rango) {
+    numero_articulo <- str_extract(articulo, '[0-9]+.*')
     
-    nueva_fila <- data.frame(
-      libro = lista["libro"],
-      titulo = lista["titulo"],
-      capitulo = lista["capitulo"],
-      seccion = lista["seccion"],
-      articulo = numero_articulo,
-      url = articulo,
-      stringsAsFactors = FALSE
-    )
+    #datos iniciales del bucle while    
+    pagina_web <- NULL
+    intento <- 1
     
-    tabla_articulos_f <- rbind(tabla_articulos_f, nueva_fila)
+    #forzamos a que saque el contenido aunque salgan errores
+    while (is.null(pagina_web)) {
+      pagina_web <- tryCatch({
+        # Pausa pequeña antes de cada lectura (0.5 a 1.5 segundos)
+        
+        message(paste("Leyendo artículo", numero_articulo, "- Intento:", intento))
+        
+        # Intentamos leer la página
+        paste(readLines(articulo, encoding = "UTF-8", warn = FALSE), collapse = "\n")
+        
+      }, error = function(e) {
+        message(paste("Fallo en el intento", intento, "para el artículo", numero_articulo))
+        return(NULL) # Si hay error, devuelve NULL para que el while siga
+      })
+      
+      intento <- intento + 1
+    }
+    
+    #si se han sacado lo datos guardarlos en el df
+    if (!is.null(pagina_web)) {
+      lista <- obtener_estructura(articulo, pagina_web)
+      
+      nueva_fila <- data.frame(
+        libro = as.character(lista["libro"]),
+        titulo = as.character(lista["titulo"]),
+        capitulo = as.character(lista["capitulo"]),
+        seccion = as.character(lista["seccion"]),
+        articulo = numero_articulo,
+        url = articulo,
+        stringsAsFactors = FALSE
+      )
+      
+      tabla_articulos_f <- rbind(tabla_articulos_f, nueva_fila)
+      
+    }
   }
+  #retornar el df
   return(tabla_articulos_f)
 }
 
-```
-
-Con la funciones de "trabajo" creadas esta ultima funcion se encarga de usarlas para leer la pagina web original, obetener las url y la estructuracion para luego crear un csv donde guarde el contenido
-```{r}
 #Primera parte del trabajo
 primera_parte<-function(){
   
@@ -149,13 +144,9 @@ primera_parte<-function(){
   
   #Guardo los datos en un csv
   write.csv(tabla_articulos, "tabla_articulos.csv", row.names = FALSE)
-
 }
-```
 
-Ejeculamos la funcion de la primera parte y vemos que se ejecuta el print. 
-```{r}
 primera_parte()
 print("Funciono")
 
-```
+
