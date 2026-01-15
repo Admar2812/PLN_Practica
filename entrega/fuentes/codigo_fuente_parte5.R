@@ -32,3 +32,4 @@ spacy_vec <- tolower(top20_spacy$text)
 udpipe_vec <- tolower(top20_udpipe$keyword)
 comunes <- intersect(spacy_vec, udpipe_vec)
 write.csv(comunes, file = "comunes.csv", row.names = FALSE)
+
