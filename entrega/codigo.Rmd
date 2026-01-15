@@ -18,8 +18,10 @@ output:
 
 ## R Markdown
 
-Parte 1 -  Descarga y extracción de enlaces a todos los artículos y su estructura
-
+Parte 1 
+ -Descarga y extracción de enlaces a todos los artículos y extraccion de estructura
+ -Paso de estos datos a un csv que luego puedan usar el resto
+ 
 Esta función se encarga que dado la URL de la pagina del codigo penal leerla y devolver el texto de esta
 ```{r}
 #Funcion para cargar la pagina web del codigo penal
@@ -86,8 +88,7 @@ obtener_estructura<-function(URL_articulo,pagina_web_articulo){
 ```
 
 
-Esta función se usa porque debido a la gran cantidad de paginas web que tenemos que leer he decidido crear una nueva pagina funcion que se encarge de leer las web y obtener la estructura de estas.
-Esta se ejecuta hasta que se haya sacado el contenido, continuando su ejecucion incluso si salen errores causados por la lectura de las paginas
+La funcion se ejecuta hasta que se haya sacado el contenido, repitiendo su ejecucion incluso si salen errores causados por la lectura de las paginas web.
 ```{r}
 #Funcion que se encarga de los bucles repetidos
 sacar_contenido <- function(inicio_f, final_f, articulos_f, tabla_articulos_f) {
