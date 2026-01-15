@@ -5,6 +5,7 @@ author: |
   Alberto Barreiro Tasende (alberto.barreiro@alumnos.upm.es)
   Raquel Cassinello Montes (r.cmontes@alumnos.upm.es)
   Ada Moral Merino (ada.moral@alumnos.upm.es)
+  Adrián Martín Marín (adrian.martin.marin@alumnos.upm.es)
 
 date: "2026-01-12"
 group: 9
@@ -418,9 +419,12 @@ cat(resultados_txt) # Mostrar en consola
 
 ```
 
+Parte 5: extracción de entidades nombradas con spacyr y udpipe
+
 
 Reparto de tareas:
 - Carlos Herranz Bascuñan: Parte 1 (100%)
 - Alberto Barreiro Tasende: Parte 2 (100%)
 - Raquel Casinello Montes: Parte 3 (100%)
 - Ada Moral Merino: Parte 4 (100%)
+- Adrián Martín Marín: Parte 5 (100%)
