@@ -127,39 +127,26 @@ primera_parte<-function(){
   #Llamamos a la funcion sacar_contenido en varias ocasiones para reducir el posible error causado por tener que leer paginas
   #web
   tabla_articulos <- rbind(tabla_articulos,sacar_contenido(0,50,articulos,tabla_articulos))
-  Sys.sleep(runif(1, 0.25, 0.5))
   tabla_articulos <- rbind(tabla_articulos,sacar_contenido(50,100,articulos,tabla_articulos))
-  Sys.sleep(runif(1, 0.25, 0.5))
   tabla_articulos <- rbind(tabla_articulos,sacar_contenido(100,150,articulos,tabla_articulos))
-  Sys.sleep(runif(1, 0.25, 0.5))
   tabla_articulos <- rbind(tabla_articulos,sacar_contenido(150,200,articulos,tabla_articulos))
-  Sys.sleep(runif(1, 0.25, 0.5))
   tabla_articulos <- rbind(tabla_articulos,sacar_contenido(200,250,articulos,tabla_articulos))
-  Sys.sleep(runif(1, 0.25, 0.5))
   tabla_articulos <- rbind(tabla_articulos,sacar_contenido(250,300,articulos,tabla_articulos))
-  Sys.sleep(runif(1, 0.25, 0.5))
   tabla_articulos <- rbind(tabla_articulos,sacar_contenido(300,350,articulos,tabla_articulos))
-  Sys.sleep(runif(1, 0.25, 0.5))
   tabla_articulos <- rbind(tabla_articulos,sacar_contenido(350,400,articulos,tabla_articulos))
-  Sys.sleep(runif(1, 0.25, 0.5))
   tabla_articulos <- rbind(tabla_articulos,sacar_contenido(400,450,articulos,tabla_articulos))
-  Sys.sleep(runif(1, 0.25, 0.5))
   tabla_articulos <- rbind(tabla_articulos,sacar_contenido(450,500,articulos,tabla_articulos))
-  Sys.sleep(runif(1, 0.25, 0.5))
   tabla_articulos <- rbind(tabla_articulos,sacar_contenido(500,550,articulos,tabla_articulos))
-  Sys.sleep(runif(1, 0.25, 0.5))
   tabla_articulos <- rbind(tabla_articulos,sacar_contenido(550,600,articulos,tabla_articulos))
-  Sys.sleep(runif(1, 0.25, 0.5))
   tabla_articulos <- rbind(tabla_articulos,sacar_contenido(600,650,articulos,tabla_articulos))
-  Sys.sleep(runif(1, 0.25, 0.5))
   tabla_articulos <- rbind(tabla_articulos,sacar_contenido(650,708,articulos,tabla_articulos))
   
   
   #Guardo los datos en un csv
-  write.csv(tabla_articulos, "tabla_articulos_nuevo.csv", row.names = FALSE)
-  return(tabla_articulos)
+  write.csv(tabla_articulos, "tabla_articulos.csv", row.names = FALSE)
 }
 
-df<-primera_parte()
+primera_parte()
 print("Funciono")
+
 
